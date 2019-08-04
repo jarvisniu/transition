@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>transition example</title>
+  <style>
+.example-item {
+  border: solid 1px silver;
+  width: 300px;
+}
+
+#divScrollTop {
+  overflow: auto;
+  height: 200px;
+}
+  </style>
+</head>
+<body>
+
+  <h1>transition example</h1>
+
+  <h3>1. Simple Usage (scrollTop)</h3>
+  <div class="example-item" id="divScrollTop">
+    1<br>2<br>3<br>4<br>4<br>5<br>6<br>7<br>8<br>9<br>
+    10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>
+    20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>
+  </div>
+  <div>
+    <button id="btnScrollTop1">Scroll Down</button>
+    <button id="btnScrollTop2">Back To Top</button>
+  </div>
+
+  <h3>2. Style (opacity)</h3>
+  <div class="example-item" id="divOpacity" style="opacity: 1;">
+    Opacity Example
+  </div>
+  <div>
+    <button id="btnFadeOut">Fade Out</button>
+    <button id="btnFadeIn">Fade In</button>
+  </div>
+
+  <script src="main.js"></script>
+
+</body>
+</html>
