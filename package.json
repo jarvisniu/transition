@@ -4,16 +4,19 @@
   "description": "CSS property transition for JavaScript",
   "main": "transition.js",
   "scripts": {
-    "dev": "parcel example/index.html",
-    "build": "parcel build example/index.html"
+    "dev": "parcel demo/index.html --out-dir demo/dist",
+    "build": "rm -rf demo/dist && parcel build demo/index.html --out-dir demo/dist --no-source-maps"
   },
   "keywords": [
-    "transition"
+    "transition",
+    "tween",
+    "animation"
   ],
   "repository": "git@github.com:jarvisniu/transition.git",
   "author": "Jarvis Niu <jarvisniu@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "babel-polyfill": "^6.26.0",
     "parcel-bundler": "^1.12.3"
   }
 }

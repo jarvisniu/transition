@@ -7,7 +7,7 @@
 # projects
 .cache/
 .nuxt/
-dist/
+demo/dist/
 node_modules/
 .env
 package-lock.json

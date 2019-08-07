@@ -1,14 +1,28 @@
-// transition function
-// CSS property transition for JavaScript.
+// transition - CSS property transition for JavaScript.
+// https://github.com/jarvisniu/transition
 
-// Usage
-// npm install @jarvisniu/transition
-// import transition from '@jarvisniu/transition'
-// transition(target: object, props: object, options: object)
+/* [ Usage ]
+ * npm install @jarvisniu/transition
+ * import transition from '@jarvisniu/transition'
+ * transition(target: object, props: object, options: object)
+ *
+ * [ Options ]
+ * duration: number in s, default is 0.2.
+ * easing: string, can be set to `linear`, default is `quad`.
+ *
+ * [Data structure]
+ * trans: {
+ *   target: object,
+ *   prop: string,
+ *   startValue: number,
+ *   endValue: number,
+ *   startTime: timestamp,
+ *   endTime: timestamp,
+ *   completed: bool,
+ * }
+ */
 
-// Options
-// duration: number in s, default is 0.2.
-// ease: string, can be set to `linear`, default is `quad`.
+import _debounce from 'lodash/debounce'
 
 // constants -------------------------------------------------------------------
 
@@ -18,72 +32,79 @@ const DEFAULT_DURATION = 0.2
 
 let raf = window.requestAnimationFrame
 
-// transition structure:
-// {
-//   target: object,
-//   prop: string,
-//   initVal: number,
-//   destVal: number,
-//   startTime: timestamp,
-//   endTime: timestamp,
-//   finished: bool,
-// }
-let transitionList = []
+let transList = []
 
 // functions -------------------------------------------------------------------
 
 function transition (target, props, options) {
   options = options || {}
   options.duration = options.duration || DEFAULT_DURATION
-  options.ease = options.ease || 'quad'
+  options.easing = options.easing || 'quad'
+  // merge onComplete of all props
+  if (typeof options.onComplete === 'function') {
+    options.onComplete = _debounce(options.onComplete, 0)
+  }
+  if (options.duration && options.duration > 60) {
+    console.error(`[transition] Maximum value of duration is 60 (seconds).`)
+    return
+  }
   Object.keys(props).forEach(prop => {
-    let initVal = target[prop]
+    let startValue = target[prop]
     let targetVal = props[prop]
-    if (/[\d.]+/.test(initVal)) {
-      initVal = +initVal
-    } else if (typeof initVal !== 'number') {
+    if (/[\d.]+/.test(startValue)) {
+      startValue = +startValue
+    } else if (typeof startValue !== 'number') {
       console.error(`[transition] Can not read initial value of object property ${ prop } .`)
       return
     }
-    // console.log('transition', initVal, targetVal)
 
     let startTime = Date.now()
-    transitionList.push({
+    // same target and prop only keep the last one
+    transList = transList.filter(trans => {
+      return trans.target !== target || trans.prop !== prop
+    })
+    transList.push({
       target,
       prop,
-      ease: options.ease,
-      initVal,
-      destVal: targetVal,
+      easing: options.easing,
+      startValue,
+      endValue: targetVal,
+      onUpdate: options.onUpdate,
+      onComplete: options.onComplete,
       startTime,
       endTime: startTime + options.duration * 1000,
-      finished: false,
+      completed: false,
     })
   })
+  if (typeof options.onStart === 'function') options.onStart()
 }
 
 function loop () {
-  transitionList.forEach(trans => {
+  transList.forEach(trans => {
     let currentTime = Date.now()
     let t = (currentTime - trans.startTime) / (trans.endTime - trans.startTime)
     if (t >= 1) {
       t = 1
-      trans.finished = true
+      trans.completed = true
+      if (typeof trans.onComplete === 'function') trans.onComplete()
     }
-    if (trans.ease !== 'linear') t = quadEase(t)
-    let currentVal = trans.initVal + (trans.destVal - trans.initVal) * t
+    if (trans.easing !== 'linear') t = easingFunctions.quad(t)
+    let currentVal = trans.startValue + (trans.endValue - trans.startValue) * t
     trans.target[trans.prop] = currentVal
+    if (typeof trans.onUpdate === 'function') trans.onUpdate()
   })
-  transitionList = transitionList.filter(trans => !trans.finished)
+  transList = transList.filter(trans => !trans.completed)
   raf(loop)
 }
 
-// quad easing function
-function quadEase (t) {
-  if (t < 0.5) {
-    return 2 * t * t
-  } else {
-    return -2 * t * t + 4 * t - 1
-  }
+let easingFunctions = {
+  quad(t) {
+    if (t < 0.5) {
+      return 2 * t * t
+    } else {
+      return -2 * t * t + 4 * t - 1
+    }
+  },
 }
 
 // bootstrap -------------------------------------------------------------------
