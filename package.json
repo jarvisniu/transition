@@ -3,6 +3,7 @@
   "version": "0.1.1",
   "description": "CSS property transition for JavaScript",
   "main": "transition.js",
+  "types": "transition.d.ts",
   "scripts": {
     "dev": "parcel demo/index.html --out-dir demo/dist",
     "build": "rm -rf demo/dist && parcel build demo/index.html --out-dir demo/dist --public-url . --no-source-maps"

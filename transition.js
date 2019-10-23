@@ -36,7 +36,7 @@ let transList = []
 
 // functions -------------------------------------------------------------------
 
-function transition (target, props, options) {
+function transition(target, props, options) {
   options = options || {}
   options.duration = options.duration || DEFAULT_DURATION
   options.easing = options.easing || 'quad'
@@ -48,7 +48,7 @@ function transition (target, props, options) {
     console.error(`[transition] Maximum value of duration is 60 (seconds).`)
     return
   }
-  Object.keys(props).forEach(prop => {
+  Object.keys(props).forEach((prop) => {
     let startValue = target[prop]
     let targetVal = props[prop]
     if (/[\d.]+/.test(startValue)) {
@@ -60,10 +60,10 @@ function transition (target, props, options) {
 
     let startTime = Date.now()
     // same target and prop only keep the last one
-    transList = transList.filter(trans => {
-      return trans.target !== target || trans.prop !== prop
+    let existingTransIndex = transList.findIndex((trans) => {
+      return trans.target === target && trans.prop === prop
     })
-    transList.push({
+    let newTrans = {
       target,
       prop,
       easing: options.easing,
@@ -74,13 +74,24 @@ function transition (target, props, options) {
       startTime,
       endTime: startTime + options.duration * 1000,
       completed: false,
-    })
+    }
+    if (existingTransIndex > -1) {
+      let existingTrans = transList[existingTransIndex]
+      if (existingTrans.endValue !== targetVal) {
+        transList = transList.filter((trans) => {
+          return trans.target !== target || trans.prop !== prop
+        })
+        transList.push(newTrans)
+      }
+    } else {
+      transList.push(newTrans)
+    }
   })
   if (typeof options.onStart === 'function') options.onStart()
 }
 
-function loop () {
-  transList.forEach(trans => {
+function loop() {
+  transList.forEach((trans) => {
     let currentTime = Date.now()
     let t = (currentTime - trans.startTime) / (trans.endTime - trans.startTime)
     if (t >= 1) {
@@ -93,7 +104,7 @@ function loop () {
     trans.target[trans.prop] = currentVal
     if (typeof trans.onUpdate === 'function') trans.onUpdate()
   })
-  transList = transList.filter(trans => !trans.completed)
+  transList = transList.filter((trans) => !trans.completed)
   raf(loop)
 }
 
