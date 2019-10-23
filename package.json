@@ -1,6 +1,6 @@
 {
   "name": "@jarvisniu/transition",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "CSS property transition for JavaScript",
   "main": "transition.js",
   "types": "transition.d.ts",
