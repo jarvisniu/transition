@@ -9,6 +9,8 @@
  * [ Options ]
  * duration: number in s, default is 0.2.
  * easing: string, can be set to `linear`, default is `quad`.
+ * onStart / onUpdate / onComplete: function, life-cycle hooks.
+ * interpolate: function, how to interpolate the value.
  *
  * [Data structure]
  * trans: {
@@ -71,6 +73,7 @@ function transition(target, props, options) {
       endValue: targetVal,
       onUpdate: options.onUpdate,
       onComplete: options.onComplete,
+      interpolate: options.interpolate || linearInterpolate,
       startTime,
       endTime: startTime + options.duration * 1000,
       completed: false,
@@ -100,7 +103,7 @@ function loop() {
       if (typeof trans.onComplete === 'function') trans.onComplete()
     }
     if (trans.easing !== 'linear') t = easingFunctions.quad(t)
-    let currentVal = trans.startValue + (trans.endValue - trans.startValue) * t
+    let currentVal = trans.interpolate(trans.startValue, trans.endValue, t)
     trans.target[trans.prop] = currentVal
     if (typeof trans.onUpdate === 'function') trans.onUpdate()
   })
@@ -116,6 +119,10 @@ let easingFunctions = {
       return -2 * t * t + 4 * t - 1
     }
   },
+}
+
+function linearInterpolate(startVal, endVal, t) {
+  return startVal + (endVal - startVal) * t
 }
 
 // bootstrap -------------------------------------------------------------------

@@ -4,6 +4,7 @@ interface TransitionOptions {
   onStart?: any,
   onUpdate?: any,
   onComplete?: any,
+  interpolate?: (startVal: any, endVal: any, t: number) => any,
 }
 
 declare let transition: (target: object, props: object, options?: TransitionOptions) => void

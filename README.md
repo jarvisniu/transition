@@ -24,9 +24,10 @@ Options:
 
 - `duration`: Default is `0.2` second. The last time of the transition.
 - `easing`: Default is `'quad'`. The easing function, can be set to `'linear'`.
-- `onStart`: The callback function executed before the first transition frame.
-- `onUpdate`: The callback function executed after each transition frame.
-- `onComplete`: The callback function executed after the last transition frame.
+- `onStart(val)`: The callback function executed before the first transition frame.
+- `onUpdate(val)`: The callback function executed after each transition frame.
+- `onComplete(val)`: The callback function executed after the last transition frame.
+- `interpolate(startVal, endVal, t)`: Define how to interpolate the non-linear value (e.g. hex color `0xff0000`).
 
 ## Licence
 
